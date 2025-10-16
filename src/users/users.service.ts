@@ -7,15 +7,34 @@ export class UsersService {
   constructor(private prisma: PrismaService) {}
 
   createUser(data: Prisma.UserCreateInput) {
-    return this.prisma.user.create({ data });
+    return this.prisma.user.create({
+      data: {
+        ...data,
+        userSettings: {
+          create: {
+            notificationsOn: false,
+          },
+        },
+      },
+    });
   }
 
   getUsers() {
-    return this.prisma.user.findMany();
+    return this.prisma.user.findMany({ include: { userSettings: true } });
   }
 
   getUserById(id: number) {
-    return this.prisma.user.findUnique({ where: { id } });
+    return this.prisma.user.findUnique({
+      where: { id },
+      include: {
+        userSettings: {
+          // The select only selects that filed and exclude other fields.
+          select: {
+            notificationsOn: true,
+          },
+        },
+      },
+    });
   }
 
   async updateUserById(id: number, data: Prisma.UserUpdateInput) {
