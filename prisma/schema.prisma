@@ -13,6 +13,7 @@ model User {
   displayName String? @default("")
   userSettings UserSettings?
   posts Post[]
+  groupPost UserOnGroupPosts[]
 }
 
 model UserSettings {
@@ -20,6 +21,21 @@ model UserSettings {
   notificationsOn Boolean
   user User @relation(fields: [userId], references: [id])
   userId Int @unique
+}
+model GroupPost{
+  id Int @default(autoincrement()) @id
+  title String
+  description String
+  users UserOnGroupPosts[]
+}
+
+model UserOnGroupPosts {
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+  groupPost GroupPost @relation(fields: [groupPostId], references: [id])
+  groupPostId Int
+
+  @@id([userId, groupPostId])
 }
 
 model Post {
